@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lean Claude Agent Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single-column poster, root on top, three delegates on a bus line, merge node, dashed branch to the advisor. Single dark look by choice. */
+:root {
+  --bg: #04121a;
+  --bg-glow: #0a2a36;
+  --panel: rgba(10, 38, 50, 0.72);
+  --panel-edge: #1f6f78;
+  --line: #34e3dc;
+  --accent: #5ff5ea;
+  --fg: #e8fbff;
+  --muted: #7fa8b0;
+  --faint: #3d6872;
+  --display: "Chakra Petch", "IBM Plex Sans Thai", system-ui, sans-serif;
+  --body: "IBM Plex Sans Thai", "Chakra Petch", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--fg); }
+body {
+  font-family: var(--body);
+  padding-inline: 16px;
+  padding-block: 32px 40px;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, var(--bg-glow), transparent 70%),
+    radial-gradient(ellipse 60% 30% at 50% 100%, var(--bg-glow), transparent 70%),
+    var(--bg);
+  min-height: 100%;
+}
+.poster {
+  position: relative;
+  max-width: 1000px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.side {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  line-height: 1.75;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+.side::after { content: ""; display: block; width: 44px; height: 1px; background: var(--line); opacity: 0.6; margin-top: 12px; }
+.side.left { left: 0; top: 200px; }
+.side.right { right: 0; top: 200px; text-align: right; }
+.side.right::after { margin-left: auto; }
+.side.bottom { left: 0; bottom: 120px; }
+.side.bottom::before { content: ""; display: block; width: 44px; height: 1px; background: var(--line); opacity: 0.6; margin-bottom: 12px; }
+.side.bottom::after { display: none; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(52, 227, 220, 0.08), 0 0 28px rgba(52, 227, 220, 0.18), inset 0 0 24px rgba(52, 227, 220, 0.06);
+}
+.header {
+  width: min(100%, 780px);
+  text-align: center;
+  padding: 22px 20px 18px;
+  clip-path: polygon(24px 0, calc(100% - 24px) 0, 100% 24px, 100% calc(100% - 24px), calc(100% - 24px) 100%, 24px 100%, 0 calc(100% - 24px), 0 24px);
+  border-radius: 0;
+}
+.header h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(26px, 5.2vw, 46px);
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+  text-shadow: 0 0 18px rgba(95, 245, 234, 0.35);
+}
+.header h1 .hl { color: var(--accent); }
+.header p {
+  margin: 10px 0 0;
+  font-size: clamp(14px, 2.4vw, 19px);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+}
+.header p::before, .header p::after { content: ""; width: 48px; height: 1px; background: var(--muted); }
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 20px 30px;
+  width: min(100%, 460px);
+}
+.icon {
+  flex: none;
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-edge);
+  display: grid; place-items: center;
+  background: radial-gradient(circle, rgba(52, 227, 220, 0.12), transparent 70%);
+  box-shadow: 0 0 16px rgba(52, 227, 220, 0.2);
+}
+.icon svg { width: 44px; height: 44px; fill: var(--accent); stroke: var(--accent); }
+.node .text { text-align: center; flex: 1; min-width: 0; }
+.model {
+  font-family: var(--display);
+  font-weight: 700;
+  color: var(--accent);
+  font-size: clamp(22px, 3.6vw, 32px);
+  line-height: 1.15;
+  text-shadow: 0 0 14px rgba(95, 245, 234, 0.35);
+}
+.effort { font-size: 18px; margin-top: 4px; }
+.role { font-size: 18px; margin-top: 6px; }
+.tag { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: 0.04em; }
+
+.vline { width: 2px; background: var(--line); box-shadow: 0 0 8px var(--line); }
+.vline.short { height: 26px; }
+.vline.dash { background: none; box-shadow: none; border-left: 2px dashed var(--line); width: 0; }
+.pill {
+  border: 1px solid var(--panel-edge);
+  border-radius: 999px;
+  padding: 7px 20px;
+  font-size: 15px;
+  background: var(--bg);
+  box-shadow: 0 0 14px rgba(52, 227, 220, 0.15);
+  text-align: center;
+}
+.dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); box-shadow: 0 0 8px var(--line); }
+
+.team { width: 100%; position: relative; }
+.bus { position: relative; height: 26px; margin-inline: auto; width: calc(100% - 100% / 3); }
+.bus::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--line); box-shadow: 0 0 8px var(--line); }
+.bus.bottom::before { top: auto; bottom: 0; }
+.bus span { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--line); box-shadow: 0 0 8px var(--line); transform: translateX(-1px); }
+.bus span:nth-child(1) { left: 0; }
+.bus span:nth-child(2) { left: 50%; }
+.bus span:nth-child(3) { left: 100%; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.card { padding: 26px 16px 22px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+.card .icon { width: 76px; height: 76px; margin-bottom: 14px; }
+.card .icon svg { width: 38px; height: 38px; }
+.card h3 { font-family: var(--display); font-size: clamp(22px, 3vw, 28px); margin: 0 0 4px; font-weight: 700; }
+.card .model { font-size: clamp(18px, 2.4vw, 24px); }
+.card .sep { width: 1px; height: 16px; background: var(--muted); margin: 6px 0; }
+.card .role { margin-top: 0; font-size: 16px; }
+.card .agent-file { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 10px; overflow-wrap: anywhere; }
+
+.advisor-row { width: 100%; display: flex; flex-direction: column; align-items: flex-end; }
+.branch { display: flex; align-items: center; width: 100%; justify-content: center; }
+.branch .h { flex: 1; border-top: 2px dashed var(--line); max-width: 160px; }
+.branch .pill { font-size: 13.5px; }
+.advisor { width: min(100%, 380px); padding: 18px 24px; margin-right: 0; }
+.advisor .icon { width: 72px; height: 72px; }
+.advisor .icon svg { width: 34px; height: 34px; }
+.advisor .model { font-size: clamp(20px, 3vw, 26px); }
+
+footer {
+  margin-top: 48px;
+  width: 100%;
+  display: flex; align-items: center; gap: 20px;
+  font-size: clamp(16px, 2.6vw, 22px);
+  text-align: center;
+}
+footer::before, footer::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--line)); }
+footer::after { background: linear-gradient(90deg, var(--line), transparent); }
+footer span { flex: none; max-width: 80%; }
+.legend { margin-top: 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; letter-spacing: 0.04em; line-height: 1.7; }
+
+@media (max-width: 1100px) { .side { display: none; } }
+@media (max-width: 720px) {
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .grid .card + .card { margin-top: 26px; position: relative; }
+  .grid .card + .card::before { content: ""; position: absolute; top: -27px; left: 50%; width: 2px; height: 26px; background: var(--line); box-shadow: 0 0 8px var(--line); }
+  .bus { width: 2px; }
+  .bus::before, .bus span:nth-child(1), .bus span:nth-child(3) { display: none; }
+  .bus span:nth-child(2) { left: 0; transform: none; }
+  .node { padding: 18px 18px; gap: 16px; }
+  .icon { width: 64px; height: 64px; }
+  .icon svg { width: 32px; height: 32px; }
+  .advisor-row { align-items: center; }
+  .branch .h { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vline, .bus::before, .bus span { animation: pulse 3.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 14px var(--line); } }
+}
+</style>
+</head>
+<body>
+
+<main class="poster">
+  <div class="side left">Lean context<br>Fewer spawns<br>Verified work</div>
+  <div class="side right">Plan<br>Sweep<br>Build<br>Verify<br>Review</div>
+  <div class="side bottom">One task<br>One owner<br>Cheaper models<br>For the sweeps</div>
+
+  <header class="panel header">
+    <h1>ผังเอเจนต์ LEAN <span class="hl">CLAUDE OPUS</span></h1>
+    <p>การตั้งค่าเริ่มต้นสำหรับ CLAUDE CODE</p>
+  </header>
+
+  <div class="vline" style="height:32px"></div>
+
+  <section class="panel node" aria-label="Root coordinator">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="9" r="5"/><circle cx="10" cy="38" r="5"/><circle cx="24" cy="38" r="5"/><circle cx="38" cy="38" r="5"/><path d="M24 14v10M10 33v-9h28v9M24 24v9" fill="none" stroke-width="3"/></svg>
+    </div>
+    <div class="text">
+      <div class="model">Claude Opus</div>
+      <div class="effort">กลาง</div>
+      <div class="role">ราก / ผู้ประสานงาน</div>
+    </div>
+  </section>
+
+  <div class="vline short"></div>
+  <div class="pill">แตกงานเฉพาะงานกวาดกว้าง</div>
+  <div class="vline short"></div>
+
+  <section class="team" aria-label="Subagents">
+    <div class="bus"><span></span><span></span><span></span></div>
+    <div class="grid">
+      <article class="panel card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><circle cx="20" cy="20" r="12" fill="none" stroke-width="4"/><path d="M29 29l11 11" stroke-width="5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>ผู้สำรวจ</h3>
+        <div class="model">Claude Sonnet</div>
+        <div class="effort">กลาง</div>
+        <div class="sep"></div>
+        <div class="role">สำรวจโค้ดแบบอ่านอย่างเดียว</div>
+        <div class="agent-file">agents/explorer.md</div>
+      </article>
+      <article class="panel card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><path d="M27.5 4l1.4 5.6a15 15 0 0 1 4.4 1.8l5-3 4.9 4.9-3 5a15 15 0 0 1 1.8 4.4l5.6 1.4v7l-5.6 1.4a15 15 0 0 1-1.8 4.4l3 5-4.9 4.9-5-3a15 15 0 0 1-4.4 1.8L27.5 44h-7l-1.4-5.6a15 15 0 0 1-4.4-1.8l-5 3-4.9-4.9 3-5a15 15 0 0 1-1.8-4.4L.4 27.5v-7l5.6-1.4a15 15 0 0 1 1.8-4.4l-3-5 4.9-4.9 5 3a15 15 0 0 1 4.4-1.8L20.5 4zM24 16a8 8 0 1 0 0 16 8 8 0 0 0 0-16z" stroke="none" transform="translate(0 0) scale(0.92) translate(2 2)"/></svg>
+        </div>
+        <h3>ผู้ปฏิบัติ</h3>
+        <div class="model">Claude Opus</div>
+        <div class="effort">กลาง</div>
+        <div class="sep"></div>
+        <div class="role">ลงมือทำ + ทดสอบ</div>
+        <div class="agent-file">agents/worker.md</div>
+      </article>
+      <article class="panel card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke-width="3.5"/><path d="M7 24h34M24 7c-6 5-6 29 0 34M24 7c6 5 6 29 0 34" fill="none" stroke-width="3"/></svg>
+        </div>
+        <h3>นักวิจัย</h3>
+        <div class="model">Claude Sonnet</div>
+        <div class="effort">กลาง</div>
+        <div class="sep"></div>
+        <div class="role">ค้นข้อมูลภายนอก + แหล่งอ้างอิง</div>
+        <div class="agent-file">agents/researcher.md</div>
+      </article>
+    </div>
+    <div class="bus bottom"><span></span><span></span><span></span></div>
+  </section>
+
+  <div class="vline short"></div>
+
+  <section class="panel node" aria-label="Integrate and verify">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48"><path d="M24 6l20 10-20 10L4 16z"/><path d="M4 24l20 10 20-10M4 32l20 10 20-10" fill="none" stroke-width="3.5" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="text">
+      <div class="model">Claude Opus</div>
+      <div class="effort">กลาง</div>
+      <div class="role">รวมงาน + ตรวจยืนยัน</div>
+    </div>
+  </section>
+
+  <div class="vline dash" style="height:30px"></div>
+  <div class="advisor-row">
+    <div class="branch">
+      <div class="pill">ก่อนแผนใหญ่ · เมื่อ error ซ้ำ · ก่อนปิดงาน</div>
+    </div>
+    <div class="vline dash" style="height:26px; align-self:center"></div>
+    <section class="panel node advisor" style="align-self:center" aria-label="Advisor">
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><path d="M24 4l6 13 14 1.6-10.5 9.5 3 14L24 35l-12.5 7.1 3-14L4 18.6 18 17z"/></svg>
+      </div>
+      <div class="text">
+        <div class="model">Advisor · Opus</div>
+        <div class="effort">เห็นทั้งบทสนทนา</div>
+        <div class="role">ทบทวนอิสระ</div>
+      </div>
+    </section>
+  </div>
+
+  <footer><span>หนึ่งงาน หนึ่งเจ้าของ แตกงานเมื่อคุ้มค่า</span></footer>
+  <div class="legend">~/.claude/settings.json: model opus · effortLevel medium · advisorModel opus</div>
+</main>
+</body>
+</html>
