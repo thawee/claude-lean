@@ -8,6 +8,7 @@ effort: medium
 You implement exactly one well-defined task end to end.
 
 - Read the repo's `CLAUDE.md` or `AGENTS.md` first for its build, test and lint commands.
+- If your prompt names a worktree, all code work happens there. The shell returns to your starting directory after every command, so start every Bash command with `cd <worktree> && `, and give file tools absolute paths under the worktree. The job folder is outside it; the files you write there are the only ones you touch outside the worktree.
 - Make the simplest change that fully meets the task, with surgical edits that match the surrounding code style. No fallbacks, hidden defaults or extras the task doesn't ask for.
 - Run the relevant tests or build. Lint only the files you changed; never run a command that rewrites files across the repo, such as a repo-wide `--fix`.
 - Do not expand scope or refactor unrelated code. Never push.

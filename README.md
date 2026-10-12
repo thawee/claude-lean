@@ -21,21 +21,32 @@ One task, one owner. Delegate only when it pays off: each subagent starts cold, 
 
 ## Shipping a feature
 
-Type `/ship <feature>` in a repo with a clean working tree:
+Type `/ship <feature>` in any git repo:
 
 ```
-spec (coordinator) -> you approve -> worker builds on ship/<job-id> -> reviewer
+spec (coordinator) -> you approve -> worker builds in its worktree -> reviewer
                                          ^                              |
                                          +--- CHANGES (max 2 resumes) --+
                                                                         v PASS
-                                         gate: READY or ESCALATE -> branch ready (or merged with --merge)
+                                         gate: READY or ESCALATE -> ready for /ship approve (or merged with --merge)
 ```
 
 - The coordinator writes `spec.md` with acceptance criteria and waits for your approval before any code is written.
-- The worker builds and tests on a `ship/<job-id>` branch. The reviewer checks the diff against the spec. On `CHANGES` the same worker is resumed, at most twice.
+- Each job gets its own git worktree at `../<repo>-ship/<job-id>/` on a `ship/<job-id>` branch, so your checkout is never switched and you can keep working. Open several sessions and run `/ship` in each to build features in parallel. A job starts from the last commit on your branch, without your uncommitted changes.
+- The worker builds and tests in the worktree. The reviewer checks the diff against the spec. On `CHANGES` the same worker is resumed, at most twice.
 - The worker records evidence for every acceptance criterion in `build.md`; the reviewer re-runs at least one. At the gate, the coordinator checks that evidence, re-runs one criterion itself, and checks the branch merges cleanly with `git merge-tree`.
-- The gate escalates changes to payments, auth, secrets, deploy or CI config, schemas, production data or dependencies. Otherwise the branch is ready to merge; `--merge` merges it into your branch. It never pushes.
-- Job files live in `.lean/jobs/<job-id>/`, which `/ship` adds to `.git/info/exclude`, so they are never committed.
+- The gate escalates changes to payments, auth, secrets, deploy or CI config, schemas, production data or dependencies. Otherwise the job stops at `ready`; `--merge` merges it into your branch straight away. Merging needs your checkout clean and on that branch, and removes the worktree afterwards. It never pushes.
+- When a job is `ready` or needs you:
+
+  ```
+  /ship approve <job-id>           merge it into the branch it started from
+  /ship rework <job-id> <note>     send it back to a fresh worker with your feedback
+  ```
+
+  `approve` asks you to confirm first if the gate escalated or the build never reached READY. `rework` also recovers a job whose session ended mid-run, after you confirm nothing else is working on it. Run `/ship` from your main checkout, not from inside a worktree.
+
+  To throw a job away: `git worktree remove --force <worktree> && git branch -D ship/<job-id>`.
+- Job files live in `.lean/jobs/<job-id>/` (state in `job.json`), which `/ship` adds to `.git/info/exclude`, so they are never committed.
 - Agents read build, test and lint commands from the repo's `CLAUDE.md` or `AGENTS.md`, so make sure those are written down.
 - Only you can start `/ship`; Claude never runs it on its own (`disable-model-invocation`). Check its resident cost with `/context` after installing.
 

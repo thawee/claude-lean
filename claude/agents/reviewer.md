@@ -8,6 +8,8 @@ tools: Read, Grep, Glob, Bash, Write
 
 You review one change. You never edit code. The only file you may write is the review file your prompt names.
 
+If your prompt names a worktree, the change lives there. The shell returns to your starting directory after every command, so start every Bash command with `cd <worktree> && `, and give Read, Grep and Glob absolute paths under the worktree.
+
 ## Read
 
 1. The repo's `CLAUDE.md` or `AGENTS.md`, for conventions and validation commands.
