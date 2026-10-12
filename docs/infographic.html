@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: single-column poster, root on top, three delegates on a bus line, merge node, dashed branch to the advisor. Single dark look by choice. */
+/* Layout: single-column poster, root on top, four delegates on a bus line, merge node, dashed branch to the advisor, then the /ship pipeline strip. Single dark look by choice. */
 :root {
   --bg: #04121a;
   --bg-glow: #0a2a36;
@@ -137,21 +137,22 @@ body {
 .dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); box-shadow: 0 0 8px var(--line); }
 
 .team { width: 100%; position: relative; }
-.bus { position: relative; height: 26px; margin-inline: auto; width: calc(100% - 100% / 3); }
+.bus { position: relative; height: 26px; margin-inline: auto; width: calc(100% - 100% / 4); }
 .bus::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--line); box-shadow: 0 0 8px var(--line); }
 .bus.bottom::before { top: auto; bottom: 0; }
 .bus span { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--line); box-shadow: 0 0 8px var(--line); transform: translateX(-1px); }
 .bus span:nth-child(1) { left: 0; }
-.bus span:nth-child(2) { left: 50%; }
-.bus span:nth-child(3) { left: 100%; }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-.card { padding: 26px 16px 22px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+.bus span:nth-child(2) { left: 33.333%; }
+.bus span:nth-child(3) { left: 66.667%; }
+.bus span:nth-child(4) { left: 100%; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.card { padding: 24px 12px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
 .card .icon { width: 76px; height: 76px; margin-bottom: 14px; }
 .card .icon svg { width: 38px; height: 38px; }
 .card h3 { font-family: var(--display); font-size: clamp(22px, 3vw, 28px); margin: 0 0 4px; font-weight: 700; }
 .card .model { font-size: clamp(18px, 2.4vw, 24px); }
 .card .sep { width: 1px; height: 16px; background: var(--muted); margin: 6px 0; }
-.card .role { margin-top: 0; font-size: 16px; }
+.card .role { margin-top: 0; font-size: 15px; text-wrap: balance; }
 .card .agent-file { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 10px; overflow-wrap: anywhere; }
 
 .advisor-row { width: 100%; display: flex; flex-direction: column; align-items: flex-end; }
@@ -162,6 +163,20 @@ body {
 .advisor .icon { width: 72px; height: 72px; }
 .advisor .icon svg { width: 34px; height: 34px; }
 .advisor .model { font-size: clamp(20px, 3vw, 26px); }
+
+.ship { margin-top: 44px; width: 100%; padding: 24px 24px 22px; text-align: center; }
+.ship h2 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.4vw, 30px); margin: 0; }
+.ship h2 code { font-family: var(--mono); color: var(--accent); text-shadow: 0 0 14px rgba(95, 245, 234, 0.35); }
+.ship .sub { margin: 6px 0 18px; font-size: 16px; color: var(--muted); }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; justify-content: center; gap: 8px; }
+.steps li { flex: 1 1 0; min-width: 0; border: 1px solid var(--panel-edge); border-radius: 10px; padding: 10px 6px; background: var(--bg); box-shadow: 0 0 12px rgba(52, 227, 220, 0.12); display: flex; flex-direction: column; justify-content: center; }
+.steps li.arrow { flex: none; border: none; box-shadow: none; background: none; padding: 0; color: var(--line); font-size: 20px; }
+.steps .who { font-family: var(--display); font-weight: 700; color: var(--accent); font-size: 17px; }
+.steps .what { font-size: 13.5px; margin-top: 2px; }
+.steps .file { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+.loop { margin-top: 14px; display: inline-block; border: 1px dashed var(--line); border-radius: 999px; padding: 6px 18px; font-size: 14.5px; }
+.ship .note { margin-top: 12px; font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+.ship .note code { font-family: var(--mono); font-size: 12px; }
 
 footer {
   margin-top: 48px;
@@ -177,11 +192,13 @@ footer span { flex: none; max-width: 80%; }
 
 @media (max-width: 1100px) { .side { display: none; } }
 @media (max-width: 720px) {
+  .steps { flex-direction: column; }
+  .steps li.arrow { transform: rotate(90deg); }
   .grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .grid .card + .card { margin-top: 26px; position: relative; }
   .grid .card + .card::before { content: ""; position: absolute; top: -27px; left: 50%; width: 2px; height: 26px; background: var(--line); box-shadow: 0 0 8px var(--line); }
   .bus { width: 2px; }
-  .bus::before, .bus span:nth-child(1), .bus span:nth-child(3) { display: none; }
+  .bus::before, .bus span:nth-child(1), .bus span:nth-child(3), .bus span:nth-child(4) { display: none; }
   .bus span:nth-child(2) { left: 0; transform: none; }
   .node { padding: 18px 18px; gap: 16px; }
   .icon { width: 64px; height: 64px; }
@@ -199,7 +216,7 @@ footer span { flex: none; max-width: 80%; }
 
 <main class="poster">
   <div class="side left">Lean context<br>Fewer spawns<br>Verified work</div>
-  <div class="side right">Plan<br>Sweep<br>Build<br>Verify<br>Review</div>
+  <div class="side right">Spec<br>Build<br>Review<br>Gate<br>Ship</div>
   <div class="side bottom">One task<br>One owner<br>Cheaper models<br>For the sweeps</div>
 
   <header class="panel header">
@@ -225,7 +242,7 @@ footer span { flex: none; max-width: 80%; }
   <div class="vline short"></div>
 
   <section class="team" aria-label="Subagents">
-    <div class="bus"><span></span><span></span><span></span></div>
+    <div class="bus"><span></span><span></span><span></span><span></span></div>
     <div class="grid">
       <article class="panel card">
         <div class="icon" aria-hidden="true">
@@ -246,7 +263,7 @@ footer span { flex: none; max-width: 80%; }
         <div class="model">Claude Opus</div>
         <div class="effort">กลาง</div>
         <div class="sep"></div>
-        <div class="role">ลงมือทำ + ทดสอบ</div>
+        <div class="role">ลงมือทำ + ทดสอบ · STATUS</div>
         <div class="agent-file">agents/worker.md</div>
       </article>
       <article class="panel card">
@@ -260,8 +277,19 @@ footer span { flex: none; max-width: 80%; }
         <div class="role">ค้นข้อมูลภายนอก + แหล่งอ้างอิง</div>
         <div class="agent-file">agents/researcher.md</div>
       </article>
+      <article class="panel card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><path d="M24 5l16 6v12c0 10-7 17-16 20C15 40 8 33 8 23V11z" fill="none" stroke-width="3.5" stroke-linejoin="round"/><path d="M16 24l6 6 11-12" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>ผู้ตรวจโค้ด</h3>
+        <div class="model">Claude Sonnet</div>
+        <div class="effort">กลาง</div>
+        <div class="sep"></div>
+        <div class="role">ตรวจโค้ดแบบอ่านอย่างเดียว · VERDICT</div>
+        <div class="agent-file">agents/reviewer.md</div>
+      </article>
     </div>
-    <div class="bus bottom"><span></span><span></span><span></span></div>
+    <div class="bus bottom"><span></span><span></span><span></span><span></span></div>
   </section>
 
   <div class="vline short"></div>
@@ -280,7 +308,7 @@ footer span { flex: none; max-width: 80%; }
   <div class="vline dash" style="height:30px"></div>
   <div class="advisor-row">
     <div class="branch">
-      <div class="pill">ก่อนแผนใหญ่ · เมื่อ error ซ้ำ · ก่อนปิดงาน</div>
+      <div class="pill">ก่อนแผนใหญ่ · เมื่อ error ซ้ำ</div>
     </div>
     <div class="vline dash" style="height:26px; align-self:center"></div>
     <section class="panel node advisor" style="align-self:center" aria-label="Advisor">
@@ -294,6 +322,24 @@ footer span { flex: none; max-width: 80%; }
       </div>
     </section>
   </div>
+
+  <section class="panel ship" aria-label="/ship pipeline">
+    <h2><code>/ship</code> ฟีเจอร์ครบวงจร</h2>
+    <p class="sub">คุณสั่งเองเท่านั้น · Claude ไม่เรียกใช้เอง</p>
+    <ol class="steps">
+      <li><div class="who">สเปก</div><div class="what">ผู้ประสานงานเขียน</div><div class="file">spec.md</div></li>
+      <li class="arrow" aria-hidden="true">&rarr;</li>
+      <li><div class="who">อนุมัติ</div><div class="what">คุณยืนยันก่อนเขียนโค้ด</div></li>
+      <li class="arrow" aria-hidden="true">&rarr;</li>
+      <li><div class="who">สร้าง</div><div class="what">ผู้ปฏิบัติ · Opus</div><div class="file">build.md</div></li>
+      <li class="arrow" aria-hidden="true">&rarr;</li>
+      <li><div class="who">ตรวจ</div><div class="what">ผู้ตรวจโค้ด · Sonnet</div><div class="file">review-code.md</div></li>
+      <li class="arrow" aria-hidden="true">&rarr;</li>
+      <li><div class="who">ด่านสุดท้าย</div><div class="what">พร้อม หรือ ส่งให้คน</div><div class="file">decision.md</div></li>
+    </ol>
+    <div class="loop">CHANGES &rarr; ส่งกลับผู้ปฏิบัติคนเดิม สูงสุด 2 ครั้ง</div>
+    <div class="note">branch <code>ship/&lt;job-id&gt;</code> · <code>.lean/jobs/&lt;job-id&gt;/</code> · ไม่ push · merge เฉพาะเมื่อใส่ <code>--merge</code></div>
+  </section>
 
   <footer><span>หนึ่งงาน หนึ่งเจ้าของ แตกงานเมื่อคุ้มค่า</span></footer>
   <div class="legend">~/.claude/settings.json: model opus · effortLevel medium · advisorModel opus</div>
