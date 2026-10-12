@@ -21,6 +21,7 @@ Run the repo's tests, build, lint and type-check for the areas the change touche
 
 ## Look for
 
+- **Acceptance criteria** (when there is a spec): `build.md` lists every criterion in the spec, each with evidence that actually exercises it. Re-run the evidence for at least one criterion yourself and record it under `## Re-run`. A missing criterion, or evidence that doesn't prove it, is CHANGES.
 - **Correctness**: it does what the task requires. Edge cases, unhandled errors, off-by-one and wrong-path bugs.
 - **Tests**: the behavior the task asks for is tested, and the tests would fail if it broke.
 - **Simplicity**: the smallest change that meets the task, with no speculative options, fallbacks or swallowed errors.
@@ -36,6 +37,9 @@ VERDICT: PASS
 
 ## Checks
 <command>: pass/fail
+
+## Re-run
+Criterion <number>: <command> -> pass/fail. Only when there is a spec.
 
 ## Findings
 1. <path:line> <the problem and the fix you want>

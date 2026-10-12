@@ -33,6 +33,7 @@ spec (coordinator) -> you approve -> worker builds on ship/<job-id> -> reviewer
 
 - The coordinator writes `spec.md` with acceptance criteria and waits for your approval before any code is written.
 - The worker builds and tests on a `ship/<job-id>` branch. The reviewer checks the diff against the spec. On `CHANGES` the same worker is resumed, at most twice.
+- The worker records evidence for every acceptance criterion in `build.md`; the reviewer re-runs at least one. At the gate, the coordinator checks that evidence, re-runs one criterion itself, and checks the branch merges cleanly with `git merge-tree`.
 - The gate escalates changes to payments, auth, secrets, deploy or CI config, schemas, production data or dependencies. Otherwise the branch is ready to merge; `--merge` merges it into your branch. It never pushes.
 - Job files live in `.lean/jobs/<job-id>/`, which `/ship` adds to `.git/info/exclude`, so they are never committed.
 - Agents read build, test and lint commands from the repo's `CLAUDE.md` or `AGENTS.md`, so make sure those are written down.

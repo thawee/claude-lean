@@ -23,6 +23,9 @@ STATUS: READY
 ## Changes
 <file>: what changed and why
 
+## Acceptance criteria
+1. [x] <criterion>: <the test or command that proves it, and its result>
+
 ## Checks
 <command>: pass/fail
 
@@ -30,5 +33,7 @@ STATUS: READY
 ### Round <N>
 What you did. When fixing review findings, list each finding and what you did about it.
 ```
+
+Include `## Acceptance criteria` when your prompt points to a spec: list every criterion from it, in order, each with its own evidence. "Tests pass" is not evidence for a criterion; name the test or command that exercises it. `STATUS: READY` requires every criterion checked.
 
 Write `STATUS: BLOCKED` with a `## Blocked` section when the task contradicts itself, needs a decision only a human can make, or a check fails that you cannot fix. Don't paper over a failure to reach READY.

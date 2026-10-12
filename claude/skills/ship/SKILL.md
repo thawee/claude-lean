@@ -62,7 +62,7 @@ Show the user the acceptance criteria and assumptions, and ask them to approve o
 ## 3. Build
 
 Create the branch: `git switch -c ship/<job-id>`. Spawn `worker` with:
-`<paths> Build round 1: implement spec.md, with tests for each acceptance criterion. Commit on the branch.`
+`<paths> Build round 1: implement spec.md, with tests for each acceptance criterion, and record the evidence for every criterion in build.md. Commit on the branch.`
 Keep the agent ID from the spawn result; you resume this same worker later.
 
 When it finishes, read the first line of `build.md`:
@@ -80,20 +80,26 @@ When it finishes, read the first line of `build.md`:
 3. Decide:
    - **PASS**: go to **Gate**.
    - **CHANGES, resumes left** (N < 3): resume the worker with `SendMessage` to its agent ID:
-     `Round N review is in round-<N>/review-code.md. Address every finding, commit, and update build.md for round N+1.`
+     `Round N review is in round-<N>/review-code.md. Address every finding, commit, and update build.md for round N+1, refreshing the Acceptance criteria evidence.`
      Then go back to the `build.md` check in step 3.
    - **CHANGES, no resumes left** (N = 3): go to **Needs human**, citing the open findings.
 
 ## 5. Gate
 
-Look at `git diff --stat <base>...ship/<job-id>` and the changed paths. Write `decision.md` with `ESCALATE` on the first line if the change:
+Run three checks first:
+
+1. **Evidence**: the `## Acceptance criteria` section of `build.md` lists every criterion in `spec.md`, each marked `[x]` with a named test or command and its result.
+2. **Spot check**: pick one criterion other than the one in the final review's `## Re-run` (any one if there is only one), and run its evidence yourself on the branch. It must pass.
+3. **Conflicts**: `git merge-tree --write-tree <base> ship/<job-id>` exits 0. Any non-zero exit fails the check: 1 means the branch conflicts with `<base>`; anything else means the command could not run (it needs git 2.38 or later).
+
+Then look at `git diff --stat <base>...ship/<job-id>` and the changed paths. Write `decision.md` with `ESCALATE` on the first line if any check fails, or if the change:
 
 - touches money, access or identity: payments, auth, permissions, secrets;
 - changes deploy, CI or build config, or the scripts they run;
 - migrates a schema, sends email, writes production data, or adds a dependency;
 - rests on an Assumption in `spec.md` that is really a product decision.
 
-Otherwise write `READY`. Follow the first line with a `## Why` of two or three sentences.
+Otherwise write `READY`. Follow the first line with a `## Why` of two or three sentences and a `## Checks` list giving the result of each of the three checks. On ESCALATE, add `## For the human`: the exact decision or check you need, and the files to look at.
 
 - `ESCALATE`: go to **Needs human**.
 - `READY` without `--merge`: switch back with `git switch <base>` and tell the user the branch is ready to merge.
