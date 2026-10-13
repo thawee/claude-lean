@@ -1,8 +1,8 @@
 ---
 name: explorer
 description: Read-only codebase explorer. Use for broad file sweeps, grep searches and locating code across many files; returns a short summary with file:line references, not file dumps.
-model: sonnet
-effort: medium
+model: haiku
+effort: low
 tools: Read, Grep, Glob, Bash
 ---
 

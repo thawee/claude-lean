@@ -37,15 +37,21 @@ if os.path.exists(dest):
                  "Fix it (comments and trailing commas are not allowed), then run the installer again.")
     if not isinstance(cur, dict):
         sys.exit(f"Error: {dest} must contain a JSON object.")
-for key, value in new.items():
-    if key not in cur or cur[key] == value:
-        cur[key] = value
-        print(f"  settings: {key} = {json.dumps(value)}")
-    elif force:
-        print(f"  settings: {key} = {json.dumps(value)} (was {json.dumps(cur[key])})")
-        cur[key] = value
-    else:
-        print(f"  settings: kept your {key} = {json.dumps(cur[key])} (run with --force to use {json.dumps(value)})")
+def merge(cur, new, path=""):
+    for key, value in new.items():
+        name = path + key
+        if isinstance(value, dict) and isinstance(cur.get(key), dict):
+            # Nested objects such as modelSettings: merge entry by entry.
+            merge(cur[key], value, name + ".")
+        elif key not in cur or cur[key] == value:
+            cur[key] = value
+            print(f"  settings: {name} = {json.dumps(value)}")
+        elif force:
+            print(f"  settings: {name} = {json.dumps(value)} (was {json.dumps(cur[key])})")
+            cur[key] = value
+        else:
+            print(f"  settings: kept your {name} = {json.dumps(cur[key])} (run with --force to use {json.dumps(value)})")
+merge(cur, new)
 with open(out, "w") as f:
     json.dump(cur, f, indent=2)
     f.write("\n")
@@ -74,7 +80,7 @@ install_file() {
   echo "  installed $2"
 }
 
-for f in CLAUDE.md agents/explorer.md agents/researcher.md agents/worker.md agents/reviewer.md \
+for f in CLAUDE.md agents/Explore.md agents/explorer.md agents/researcher.md agents/worker.md agents/reviewer.md \
          skills/ship/SKILL.md; do
   install_file "$SRC/$f" "$f"
 done

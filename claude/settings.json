@@ -1,5 +1,10 @@
 {
   "model": "opus",
   "effortLevel": "medium",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
   "advisorModel": "opus"
 }
