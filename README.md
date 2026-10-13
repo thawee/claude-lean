@@ -1,6 +1,6 @@
 # Claude Lean
 
-A token-safe Claude Code setup: one Opus coordinator, cheaper Sonnet subagents for wide sweeps and code review, an Opus worker for building, and the Opus advisor for plans. `/ship` runs a feature through spec, build and review.
+A token-safe Claude Code setup: one Opus coordinator, Haiku subagents for code search, Sonnet subagents for code review and research, an Opus worker for building, and the Opus advisor for plans. `/ship` runs a feature through spec, build and review.
 
 ![Lean Claude agent map](docs/infographic.png)
 
@@ -11,7 +11,8 @@ The source of the infographic is [docs/infographic.html](docs/infographic.html).
 | Role | Model | Effort | Job |
 |---|---|---|---|
 | Root / coordinator | Opus | medium | Plans, delegates only wide sweeps, integrates and verifies |
-| `explorer` | Sonnet | medium | Read-only code search, returns `file:line` summaries |
+| `explorer` | Haiku | low | Read-only code search, returns `file:line` summaries |
+| `Explore` | Haiku | low | Replaces the built-in Explore subagent, which otherwise runs on Opus |
 | `worker` | Opus | medium | Implements one bounded task and runs its tests; reports `STATUS: READY` or `BLOCKED` |
 | `reviewer` | Sonnet | medium | Read-only review of a change; reports `VERDICT: PASS` or `CHANGES` with `path:line` findings |
 | `researcher` | Sonnet | medium | Outside docs, APIs and versions, with sources |
@@ -54,9 +55,10 @@ spec (coordinator) -> you approve -> worker builds in its worktree -> reviewer
 
 ```
 claude/
-  CLAUDE.md            global rules: plan, verify, subagent limits, token safety
-  settings.json        model, effortLevel, advisorModel
+  CLAUDE.md            global rules: plan, verify, subagent limits, token safety, compact
+  settings.json        model, effortLevel, modelSettings, advisorModel
   agents/
+    Explore.md
     explorer.md
     researcher.md
     worker.md
@@ -77,7 +79,7 @@ cd claude-lean
 ./install.sh
 ```
 
-`install.sh` copies the files into `~/.claude` and backs up anything it changes to `~/.claude/backup-<timestamp>/`. Files that are already up to date are skipped, so running it again is safe. For `settings.json` it only adds `model`, `effortLevel` and `advisorModel`, and keeps all your other settings. If you already set one of those three, it keeps your value and tells you; run `./install.sh --force` to use the setup's values instead. If `settings.json` is not valid JSON, the installer stops before changing anything.
+`install.sh` copies the files into `~/.claude` and backs up anything it changes to `~/.claude/backup-<timestamp>/`. Files that are already up to date are skipped, so running it again is safe. For `settings.json` it only adds `model`, `effortLevel`, `modelSettings` and `advisorModel`, and keeps all your other settings. `modelSettings` is merged entry by entry, so your other models' entries stay. If you already set one of these, it keeps your value and tells you; run `./install.sh --force` to use the setup's values instead. If `settings.json` is not valid JSON, the installer stops before changing anything.
 
 It replaces `~/.claude/CLAUDE.md`. If you had your own rules, merge them back from the backup folder.
 
@@ -89,7 +91,7 @@ CLAUDE_HOME=/path/to/.claude ./install.sh
 
 ### Manual install
 
-Copy `claude/agents/*.md` into `~/.claude/agents/` and `claude/skills/ship/` into `~/.claude/skills/ship/`, add the rules from `claude/CLAUDE.md` to `~/.claude/CLAUDE.md`, and add the three keys from `claude/settings.json` to `~/.claude/settings.json`.
+Copy `claude/agents/*.md` into `~/.claude/agents/` and `claude/skills/ship/` into `~/.claude/skills/ship/`, add the rules from `claude/CLAUDE.md` to `~/.claude/CLAUDE.md`, and add the four keys from `claude/settings.json` to `~/.claude/settings.json`.
 
 ### One project only
 
@@ -98,5 +100,7 @@ Put the same files in a repo instead of your home folder: `.claude/agents/`, `.c
 ## Tips
 
 - Start a new session after installing. Settings and rules are read at startup.
-- Effort is `medium` by default. Type `/effort high` in a session for a hard task.
+- Effort is `medium` by default. Opus 5.5 doesn't use the top-level `effortLevel`, so its level is set under `modelSettings` (Claude Code v2.1.251 or later). Type `/effort high` in a session for a hard task.
+- The `haiku` alias means Haiku 5.5 on the Anthropic API with Claude Code v2.1.293 or later. On Bedrock, Google Cloud, Foundry and Claude Platform on AWS it means Haiku 4.5.
+- Run `/usage` after a session to see cost per model. The search agents should show up as a Haiku line.
 - The advisor sends the whole conversation to Opus on each call, so keep it to the two moments above. Use the `reviewer` to check finished code.
