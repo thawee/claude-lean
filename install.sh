@@ -80,10 +80,20 @@ install_file() {
   echo "  installed $2"
 }
 
-for f in CLAUDE.md agents/Explore.md agents/explorer.md agents/researcher.md agents/worker.md agents/reviewer.md \
+for f in CLAUDE.md agents/explorer.md agents/researcher.md agents/worker.md agents/reviewer.md \
          skills/ship/SKILL.md; do
   install_file "$SRC/$f" "$f"
 done
+
+# Earlier versions replaced the built-in Explore agent with a Haiku one, which
+# weakened plan mode's research. Remove that override if it is ours.
+OLD_EXPLORE="agents/Explore.md"
+if [ -e "$DEST/$OLD_EXPLORE" ] && grep -qx 'name: Explore' "$DEST/$OLD_EXPLORE" \
+   && grep -qx 'model: haiku' "$DEST/$OLD_EXPLORE"; then
+  backup "$OLD_EXPLORE"
+  rm "$DEST/$OLD_EXPLORE"
+  echo "  removed $OLD_EXPLORE (built-in Explore restored)"
+fi
 
 if [ -e "$DEST/settings.json" ] && cmp -s "$MERGED" "$DEST/settings.json"; then
   echo "  unchanged settings.json"

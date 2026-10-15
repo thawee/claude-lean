@@ -10,9 +10,8 @@ The source of the infographic is [docs/infographic.html](docs/infographic.html).
 
 | Role | Model | Effort | Job |
 |---|---|---|---|
-| Root / coordinator | Opus | medium | Plans, delegates only wide sweeps, integrates and verifies |
+| Root / coordinator | Opus | high | Plans, delegates only wide sweeps, integrates and verifies |
 | `explorer` | Haiku | low | Read-only code search, returns `file:line` summaries |
-| `Explore` | Haiku | low | Replaces the built-in Explore subagent, which otherwise runs on Opus |
 | `worker` | Opus | medium | Implements one bounded task and runs its tests; reports `STATUS: READY` or `BLOCKED` |
 | `reviewer` | Sonnet | medium | Read-only review of a change; reports `VERDICT: PASS` or `CHANGES` with `path:line` findings |
 | `researcher` | Sonnet | medium | Outside docs, APIs and versions, with sources |
@@ -58,7 +57,6 @@ claude/
   CLAUDE.md            global rules: plan, verify, subagent limits, token safety, compact
   settings.json        model, effortLevel, modelSettings, advisorModel
   agents/
-    Explore.md
     explorer.md
     researcher.md
     worker.md
@@ -100,7 +98,8 @@ Put the same files in a repo instead of your home folder: `.claude/agents/`, `.c
 ## Tips
 
 - Start a new session after installing. Settings and rules are read at startup.
-- Effort is `medium` by default. Opus 5.5 doesn't use the top-level `effortLevel`, so its level is set under `modelSettings` (Claude Code v2.1.251 or later). Type `/effort high` in a session for a hard task.
+- The coordinator runs Opus 5.5 at `high` effort; `medium` made it skip planning and lesson capture. Opus 5.5 doesn't use the top-level `effortLevel`, so its level is set under `modelSettings` (Claude Code v2.1.251 or later). Type `/effort medium` in a session for cheap, routine work.
 - The `haiku` alias means Haiku 5.5 on the Anthropic API with Claude Code v2.1.293 or later. On Bedrock, Google Cloud, Foundry and Claude Platform on AWS it means Haiku 4.5.
-- Run `/usage` after a session to see cost per model. The search agents should show up as a Haiku line.
+- Run `/usage` after a session to see cost per model. The `explorer` agent should show up as a Haiku line.
+- The built-in `Explore` agent is left alone, so plan mode's research keeps its full model. Earlier versions replaced it with a Haiku copy; `install.sh` removes that copy.
 - The advisor sends the whole conversation to Opus on each call, so keep it to the two moments above. Use the `reviewer` to check finished code.
